@@ -19,14 +19,14 @@ app.post("/login-unsafe", async (req, res) => {
     if (typeof username !== "string" || typeof password !== "string") {
         return res.status(400).json({ error: "username and password strings required"});
     }
-    const sql = `SELECT id, username FROM users WHERE username = '${username}' AND password_has = '${password}'`;
+    const sql = `SELECT id, username FROM users WHERE username = '${username}' AND password_hash = '${password}'`;
     console.log("[UNSAFE] Running:", sql);
     try {
         const [rows] = await pool.query(sql);
         if (rows.length > 0) return res.json({ ok: true, user: rows[0] });
         return res.status(401).json({ ok: false, error: "invalid credentials" });
     } catch (err) {
-        console.error(err);
+        console.error('UNSAFE LOGIN ERROR:', err);
         return res.status(500).json({error: "db error"})
     }
 });
